@@ -2,89 +2,103 @@ import './App.css';
 import { useState, useEffect } from 'react';
 
 function App() {
-  const [freeDay, setFreeDay] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [lastClickDate, setLastClickDate] = useState('');
   const [canClick, setCanClick] = useState(true);
   const [showGif, setShowGif] = useState(false);
 
-  function getTodayLocal() {
+  const getTodayLocal = () => {
     const now = new Date();
     const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0'); // janvier = 0
+    const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
-  }
+  };
+
+  const isYesterday = (dateStr) => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const y = yesterday.getFullYear();
+    const m = String(yesterday.getMonth() + 1).padStart(2, '0');
+    const d = String(yesterday.getDate()).padStart(2, '0');
+    return dateStr === `${y}-${m}-${d}`;
+  };
 
   useEffect(() => {
-    const storedDay = localStorage.getItem("freeday");
-    const storedDate = localStorage.getItem("lastClick");
-
-    if (storedDay !== null) {
-      setFreeDay(Number(storedDay));
-    }
+    const savedStreak = parseInt(localStorage.getItem('streak')) || 0;
+    const savedDate = localStorage.getItem('lastClick') || '';
 
     const today = getTodayLocal();
 
-    if (storedDate === today) {
-      setCanClick(false); // déjà cliqué aujourd'hui
+    setCanClick(savedDate !== today);
+
+    if (savedDate && !isYesterday(savedDate) && savedDate !== today) {
+      localStorage.setItem('streak', '0');
+      setStreak(0);
+      setShowGif(false);
+    } else {
+      setStreak(savedStreak);
     }
 
-    // Reinitialiser si la dernière date est < hier
-    if (storedDate && storedDate < today) {
-      localStorage.removeItem("lastClick");
-      localStorage.setItem("freeday", 0);
-      setFreeDay(0);
-      setCanClick(true);
-    }
+    setLastClickDate(savedDate);
 
-    // Vérifie chaque minute si on est passé à un nouveau jour
     const interval = setInterval(() => {
-      const now = new Date();
-      const nowDate = now.toISOString().split('T')[0];
-      const last = localStorage.getItem("lastClick");
-
-      if (last && last < nowDate) {
-        // Reset
-        localStorage.removeItem("lastClick");
-        localStorage.setItem("freeday", 0);
-        setFreeDay(0);
+      const currentDate = getTodayLocal();
+      if (lastClickDate && lastClickDate !== currentDate) {
         setCanClick(true);
       }
-    }, 60000); // toutes les 60 secondes
+
+      const missedDay =
+        lastClickDate &&
+        new Date(currentDate) > new Date(lastClickDate) &&
+        !isYesterday(lastClickDate) &&
+        lastClickDate !== currentDate;
+
+      if (missedDay) {
+        localStorage.setItem('streak', '0');
+        setStreak(0);
+        setLastClickDate('');
+        setCanClick(true);
+        setShowGif(false);
+      }
+    }, 60000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [lastClickDate]);
 
-  function addOne() {
+  function handleClick() {
     if (!canClick) return;
 
-    const newValue = freeDay + 1;
     const today = getTodayLocal();
+    const newStreak = isYesterday(lastClickDate) || !lastClickDate
+      ? streak + 1
+      : 1;
 
-    console.log(today)
-
-    setFreeDay(newValue);
+    setStreak(newStreak);
+    setLastClickDate(today);
     setCanClick(false);
+
+    localStorage.setItem('streak', newStreak.toString());
+    localStorage.setItem('lastClick', today);
+
     setShowGif(true);
-
-    localStorage.setItem("freeday", newValue);
-    localStorage.setItem("lastClick", today);
-
-    // Cache le gif après 5 secondes
-    setTimeout(() => setShowGif(false), 5000);
   }
 
   return (
     <div className="App">
-      <div className='center'>
-        <h1>Free day</h1>
-        <button onClick={addOne} disabled={!canClick}>
-          {canClick ? "+" : "Congrats Champ!"}
+      <div className="center">
+        <h1>🔥 Streak: {streak}</h1>
+        <button onClick={handleClick} disabled={!canClick}>
+          {canClick ? "Mark as done" : "Congrat Champ!"}
         </button>
-        <span>{freeDay}</span>
 
         {showGif && (
           <div>
-            <img src="/lebron.gif" alt="celebration" style={{ width: '300px', marginTop: '20px' }} />
+            <img
+              src="/lebron.gif"
+              alt="celebration"
+              style={{ width: '300px', marginTop: '20px' }}
+            />
           </div>
         )}
       </div>
