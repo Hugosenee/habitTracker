@@ -3,9 +3,11 @@ import { useState, useEffect } from 'react';
 
 function App() {
   const [streak, setStreak] = useState(0);
+  const [modiftyStreak, setModifyStreak] = useState(0);
   const [lastClickDate, setLastClickDate] = useState('');
   const [canClick, setCanClick] = useState(true);
   const [showGif, setShowGif] = useState(false);
+  const [showInput, setShowInput] = useState(false)
 
   const getTodayLocal = () => {
     const now = new Date();
@@ -84,13 +86,42 @@ function App() {
     setShowGif(true);
   }
 
+  function toggleInput() {
+    setShowInput(prev => !prev);
+  }
+  
+
+  function handleStreakNumber(e) {
+    setModifyStreak(e.target.value)
+  }
+
+  function handleNewStreak(e) {
+    e.preventDefault()
+
+    const today = getTodayLocal();
+    setStreak(modiftyStreak)
+
+    console.log(today, streak)
+
+    localStorage.setItem('streak', modiftyStreak.toString());
+    localStorage.setItem('lastClick', today);
+
+    setShowInput(false)
+
+  }
+
   return (
     <div className="App">
       <div className="center">
         <h1>🔥 Streak: {streak}</h1>
-        <button onClick={handleClick} disabled={!canClick}>
-          {canClick ? "Mark as done" : "Congrat Champ!"}
-        </button>
+        <div className='div'>        
+          <button className='streakButton' onClick={handleClick} disabled={!canClick}>
+            {canClick ? "Mark as done" : "Congrat Champ!"}
+          </button>
+
+          <span className='modify' onClick={toggleInput}>✏️</span>
+          {showInput ? <form method='POST' onSubmit={handleNewStreak}><input onChange={handleStreakNumber}></input><button className='modifyStreakButton' type='submit'>✅</button></form> : ""}
+        </div>
 
         {showGif && (
           <div>

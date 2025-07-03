@@ -12,9 +12,10 @@
   flex-direction: column;
   align-items: center;
   gap:20px;
+  height: 40vh;
 }
 
-.center button{
+.center .streakButton{
   width: 130px;
   height: 40px;
   color: #fff;
@@ -33,13 +34,13 @@
   outline: none;}
 
 
-  .center button {
+  .center .streakButton {
     background: rgb(0,172,238);
     background: linear-gradient(0deg, rgba(0,172,238,1) 0%, rgba(2,126,251,1) 100%);
     border: none;
     z-index: 1;
   }
-  .center button:after {
+  .center .streakButton:after {
     position: absolute;
     content: "";
     width: 100%;
@@ -57,13 +58,31 @@
      4px 4px 5px 0px #0001;
     transition: all 0.3s ease;
   }
-  .center button:hover {
+  .center .streakButton:hover {
     color: #fff;
   }
-  .center button:hover:after {
+  .center .streakButton:hover:after {
     top: 0;
     height: 100%;
   }
-  .center button:active {
+  .center .streakButton:active {
     top: 2px;
+  }
+
+  .div{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .modify{
+    cursor: pointer;
+  }
+
+  .modifyStreakButton{
+    border: none;
+    background-color: #fff;
+    cursor: pointer;
   }
