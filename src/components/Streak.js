@@ -111,7 +111,7 @@ return (
 <div className="bg-white rounded-2xl shadow-md p-6 w-full max-w-md mx-auto my-6">
     <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-        <span className="text-2xl">🔥</span>
+        <span className="text-2xl">{props.emoji}</span>
         <h1 className="text-xl font-semibold text-gray-900">{props.streakName}</h1>
         </div>
         <span className="text-md font-medium text-gray-600">{streak} days</span>

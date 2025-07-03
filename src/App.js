@@ -11,9 +11,9 @@ function App() {
         {new Date().toLocaleDateString("en-US", { month: "long", day: "numeric" })}
       </p>
     </div>
-      <Streak streakName="Sport"/>
-      <Streak streakName="Read"/>
-      <Streak streakName="Clean"/>
+      <Streak streakName="Sport" emoji="🏀"/>
+      <Streak streakName="Read"  emoji="📖"/>
+      <Streak streakName="Mind"  emoji="🙌🏻"/>
     </div>
   );
 }
